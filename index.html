@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A7 - Reloj rojo</title>
+<style>
+body { background:#fff4f4; font-family:Arial,sans-serif; text-align:center; color:#8c2020; }
+h1 { margin:30px 0 8px; font-size:26px; }
+p { font-size:14px; }
+canvas { max-width:90vw; height:auto; }
+</style>
+</head>
+<body>
+<h1>Mi reloj rojo</h1>
+<p>Reloj con tres manecillas en movimiento</p>
+<canvas id="reloj" width="400" height="400"></canvas>
+<script>
+const canvas = document.getElementById('reloj');
+const ctx = canvas.getContext('2d');
+// Velocidades aceleradas, manteniendo la proporción de un reloj real.
+const vr3 = 2 * Math.PI / 6; // segundos
+const vr2 = vr3 / 60;        // minutos
+const vr1 = vr2 / 12;        // horas
+const inicio = performance.now();
+
+function manecilla(angulo, largo, ancho, color) {
+  ctx.save();
+  ctx.translate(200, 200);
+  ctx.rotate(angulo);
+  ctx.beginPath();
+  ctx.moveTo(0, 8);
+  ctx.lineTo(0, -largo);
+  ctx.lineWidth = ancho;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function dibujar() {
+  ctx.clearRect(0, 0, 400, 400);
+  // Círculo del reloj.
+  ctx.beginPath();
+  ctx.arc(200, 200, 170, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.lineWidth = 9;
+  ctx.strokeStyle = '#c62828';
+  ctx.stroke();
+
+  // Marcas de las horas.
+  for (let i = 0; i < 12; i++) {
+    const a = i * Math.PI / 6;
+    const x1 = 200 + Math.sin(a) * 145;
+    const y1 = 200 - Math.cos(a) * 145;
+    const x2 = 200 + Math.sin(a) * 155;
+    const y2 = 200 - Math.cos(a) * 155;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#b71c1c';
+    ctx.stroke();
+  }
+
+  const t = (performance.now() - inicio) / 1000;
+  // Inicia aproximadamente a las 10:10.
+  manecilla((10 + 10/60) * Math.PI / 6 + vr1*t, 78, 9, '#7f1717');
+  manecilla(10 * Math.PI / 30 + vr2*t, 115, 6, '#c62828');
+  manecilla(vr3*t, 130, 3, '#ef5350');
+
+  ctx.beginPath();
+  ctx.arc(200, 200, 7, 0, Math.PI * 2);
+  ctx.fillStyle = '#7f1717';
+  ctx.fill();
+  requestAnimationFrame(dibujar);
+}
+dibujar();
+</script>
+</body>
+</html>
